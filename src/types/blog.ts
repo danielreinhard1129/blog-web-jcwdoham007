@@ -1,11 +1,15 @@
 export interface Blog {
-  thumbnail: string;
-  author: string;
-  created: number;
+  id: number;
+  title: string;
+  slug: string;
   description: string;
   category: string;
-  title: string;
-  updated: number | null;
-  objectId: string;
   content: string;
+  thumbnail: string;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    name: string;
+  };
 }
