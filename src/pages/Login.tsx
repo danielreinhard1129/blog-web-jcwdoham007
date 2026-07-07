@@ -1,69 +1,27 @@
-import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { axiosInstance2 } from "@/lib/axios";
-import { useAuth } from "@/stores/useAuth";
+import AuthBrand from "@/components/Auth/AuthBrand";
+import AuthCard from "@/components/Auth/AuthCard";
+import AuthDivider from "@/components/Auth/AuthDivider";
+import BackLink from "@/components/Auth/BackLink";
+import GoogleButton from "@/components/Auth/GoogleButton";
+import LoginForm from "@/components/Login/LoginForm";
+import useLogin from "@/hooks/api/auth/useLogin";
+import { loginSchema, type LoginSchema } from "@/schemas/auth/login";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, PenLine } from "lucide-react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
-import { z } from "zod";
-import GoogleIcon from "../components/icons/GoogleIcon";
-import toast from "react-hot-toast";
-import { useMutation } from "@tanstack/react-query";
-
-const formSchema = z.object({
-  email: z.email(),
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters.")
-    .max(50, "Password must be at most 50 characters."),
-});
+import { useForm } from "react-hook-form";
+import { Link } from "react-router";
 
 function Login() {
-  const navigate = useNavigate();
-
-  const { login } = useAuth();
-
-  const [show, setShow] = useState<boolean>(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const { mutateAsync: loginAction, isPending } = useMutation({
-    mutationFn: async (payload: z.infer<typeof formSchema>) => {
-      const response = await axiosInstance2.post("/auth/login", {
-        email: payload.email,
-        password: payload.password,
-      });
-      return response.data;
-    },
-    onSuccess: (response) => {
-      toast.success("login success");
+  const { mutateAsync: loginAction, isPending } = useLogin();
 
-      login({
-        id: response.id,
-        name: response.name,
-        email: response.email,
-        profilePic: response.profilePic,
-        role: response.role,
-        accessToken: response.accessToken,
-      });
-
-      navigate("/");
-    },
-    onError: () => {
-      toast.error("login failed");
-    },
-  });
-
-  async function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: LoginSchema) {
     await loginAction(data);
   }
 
@@ -71,113 +29,21 @@ function Login() {
     <div className="min-h-screen flex hero-bg">
       <div className="flex-1 grid place-items-center px-4 py-12">
         <div className="w-full max-w-md">
-          <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-            <span className="grid h-10 w-10 place-items-center rounded-xl gradient-primary shadow-glow">
-              <PenLine className="h-4 w-4 text-primary-foreground" />
-            </span>
-            <span className="font-display text-2xl font-semibold tracking-tight">
-              Inkwell
-            </span>
-          </Link>
+          <AuthBrand />
 
-          <div className="rounded-2xl border border-border bg-card/95 backdrop-blur p-8 shadow-card">
-            <h1 className="font-display text-2xl font-semibold tracking-tight">
-              Welcome back
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1.5">
-              Sign in to keep reading where you left off.
-            </p>
-
-            <form
-              className="mt-7 space-y-4"
-              id="form-login"
+          <AuthCard
+            title="Welcome back"
+            subtitle="Sign in to keep reading where you left off."
+          >
+            <LoginForm
+              control={form.control}
+              isPending={isPending}
               onSubmit={form.handleSubmit(onSubmit)}
-            >
-              <Controller
-                name="email"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="form-login-email">Email</FieldLabel>
-                    <Input
-                      {...field}
-                      id="form-login-email"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="you@domain.com"
-                      autoComplete="on"
-                      className="py-5"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
+            />
 
-              <Controller
-                name="password"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="form-login-password">
-                      Password
-                    </FieldLabel>
+            <AuthDivider />
 
-                    <div className="relative mt-1.5">
-                      <Input
-                        {...field}
-                        id="form-login-password"
-                        aria-invalid={fieldState.invalid}
-                        placeholder="••••••••"
-                        className="py-5"
-                        type={show ? "text" : "password"}
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() => setShow((s) => !s)}
-                        aria-label={show ? "Hide password" : "Show password"}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-muted-foreground hover:text-foreground"
-                      >
-                        {show ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-
-              <Button
-                form="form-login"
-                type="submit"
-                className="w-full gradient-primary text-primary-foreground hover:opacity-90 shadow-glow h-11"
-                disabled={isPending}
-              >
-                {isPending ? "Loading" : "Sign In"}
-              </Button>
-            </form>
-
-            <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
-              <div className="h-px flex-1 bg-border" />
-              <span>or</span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-
-            <button
-              disabled
-              type="button"
-              className="w-full h-11 flex items-center justify-center gap-2.5 rounded-lg border border-border bg-background text-sm font-medium hover:bg-surface transition-colors"
-            >
-              <GoogleIcon />
-              Continue with Google
-            </button>
+            <GoogleButton />
 
             <p className="mt-7 text-center text-sm text-muted-foreground">
               New to Inkwell?{" "}
@@ -188,13 +54,9 @@ function Login() {
                 Create an account
               </Link>
             </p>
-          </div>
+          </AuthCard>
 
-          <p className="mt-6 text-center text-xs text-muted-foreground">
-            <Link to="/" className="hover:text-foreground">
-              ← Back to stories
-            </Link>
-          </p>
+          <BackLink />
         </div>
       </div>
     </div>

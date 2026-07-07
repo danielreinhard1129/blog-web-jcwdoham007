@@ -1,26 +1,16 @@
-import { axiosInstance2 } from "@/lib/axios";
 import type { Blog } from "@/types/blog";
 import type { PageableResponse } from "@/types/pagination";
-import { useQuery } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
-import { parseAsInteger, useQueryState } from "nuqs";
 import GlobalPagination from "../GlobalPagination";
 import { BlogCard } from "./BlogCard";
 
-function Grid() {
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+interface GridProps {
+  setPage: (page: number) => void;
+  blogs: NoInfer<PageableResponse<Blog>> | undefined;
+  isPending: boolean;
+}
 
-  const { data: blogs, isPending } = useQuery({
-    queryKey: ["blogs", page],
-    queryFn: async () => {
-      const { data } = await axiosInstance2.get<PageableResponse<Blog>>(
-        "/blogs",
-        { params: { page } },
-      );
-      return data;
-    },
-  });
-
+function Grid({ blogs, isPending, setPage }: GridProps) {
   return (
     <section className="flex-1 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
       {isPending && (

@@ -4,32 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { axiosInstance, axiosInstance2 } from "@/lib/axios";
+import useCreateBlog from "@/hooks/api/blog/useCreateBlog";
+import { createBlogSchema, type CreateBlogSchema } from "@/schemas/blog/createBlog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
-import { z } from "zod";
-
-const formSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  category: z.string().min(1, "Category is required"),
-  content: z.string().min(1, "Content is required"),
-  thumbnail: z.instanceof(File, { message: "Thumbnail must be a file" }),
-});
-
-interface ResponseFileService {
-  filePath: string;
-  fileURL: string;
-}
 
 function CreateBlog() {
-  const navigate = useNavigate();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<CreateBlogSchema>({
+    resolver: zodResolver(createBlogSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -39,37 +21,9 @@ function CreateBlog() {
     },
   });
 
-  const { mutateAsync: createBlog, isPending } = useMutation({
-    mutationFn: async (payload: z.infer<typeof formSchema>) => {
-      // step 1: upload thumbnail ke file service
-      const formData = new FormData();
-      formData.append("file", payload.thumbnail);
-      const folderName = "images";
-      const fileName = Date.now() + Math.floor(Math.random() * 1000);
-      const response = await axiosInstance.post<ResponseFileService>(
-        `/files/${folderName}/${fileName}`,
-        formData,
-      );
+  const { mutateAsync: createBlog, isPending } = useCreateBlog();
 
-      // step 2: submit data(yang berupa tulisan) ke backendless
-      await axiosInstance2.post("/blogs", {
-        title: payload.title,
-        description: payload.description,
-        category: payload.category,
-        content: payload.content,
-        thumbnail: response.data.fileURL,
-      });
-    },
-    onSuccess: () => {
-      toast.success("Create blog success!");
-      navigate("/");
-    },
-    onError: () => {
-      toast.error("Create blog failed!");
-    },
-  });
-
-  async function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: CreateBlogSchema) {
     await createBlog(data);
   }
 
