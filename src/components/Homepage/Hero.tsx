@@ -1,6 +1,11 @@
 import { Search, Sparkles } from "lucide-react";
 
-function Hero() {
+interface HeroProps {
+  search: string;
+  setSearch: (search: string) => void;
+}
+
+function Hero({ search, setSearch }: HeroProps) {
   return (
     <section className="hero-bg border-b border-border/60">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-20 md:py-28 text-center">
@@ -22,6 +27,8 @@ function Hero() {
             type="search"
             placeholder="Search stories, authors, topics…"
             className="w-full rounded-full border border-border bg-background/90 backdrop-blur pl-11 pr-4 py-3.5 text-sm shadow-card outline-none focus:ring-2 focus:ring-ring"
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
           />
         </div>
       </div>
