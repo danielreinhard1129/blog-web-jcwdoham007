@@ -1,0 +1,23 @@
+import { axiosInstance2 } from "@/lib/axios";
+import type { ForgotPasswordSchema } from "@/schemas/auth/forgot-password";
+import { useMutation } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
+import toast from "react-hot-toast";
+
+function useForgotPassword() {
+  return useMutation({
+    mutationFn: async (payload: ForgotPasswordSchema) => {
+      await axiosInstance2.post("/auth/forgot-password", {
+        email: payload.email,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Check your email for reset link.");
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error.response?.data.message || "Something went wrong!");
+    },
+  });
+}
+
+export default useForgotPassword;
