@@ -45,4 +45,11 @@ export const router = createBrowserRouter([
       return { Component: ForgotPass };
     },
   },
+  {
+    path: "/reset-password/:token",
+    lazy: async () => {
+      const { default: ResetPass } = await import("./pages/ResetPassword");
+      return { Component: ResetPass };
+    },
+  },
 ]);
