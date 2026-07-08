@@ -1,6 +1,7 @@
 import { useController, type Control, type FieldValues, type Path } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
@@ -10,6 +11,7 @@ interface PasswordInputProps<T extends FieldValues> {
   label: string;
   id: string;
   placeholder?: string;
+  showForgotLink?: boolean;
 }
 
 function PasswordInput<T extends FieldValues>({
@@ -18,13 +20,25 @@ function PasswordInput<T extends FieldValues>({
   label,
   id,
   placeholder = "••••••••",
+  showForgotLink = false,
 }: PasswordInputProps<T>) {
   const [show, setShow] = useState(false);
   const { field, fieldState } = useController({ control, name });
 
   return (
     <Field data-invalid={fieldState.invalid}>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <div className="flex items-center justify-between">
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+
+        {showForgotLink && (
+          <Link
+            to="/forgot-password"
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Forgot password?
+          </Link>
+        )}
+      </div>
 
       <div className="relative mt-1.5">
         <Input

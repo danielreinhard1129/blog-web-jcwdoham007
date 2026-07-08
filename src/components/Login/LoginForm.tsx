@@ -29,9 +29,7 @@ function LoginForm({ control, isPending, onSubmit }: LoginFormProps) {
               autoComplete="on"
               className="py-5"
             />
-            {fieldState.invalid && (
-              <FieldError errors={[fieldState.error]} />
-            )}
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}
       />
@@ -41,6 +39,7 @@ function LoginForm({ control, isPending, onSubmit }: LoginFormProps) {
         name="password"
         label="Password"
         id="form-login-password"
+        showForgotLink
       />
 
       <Button
