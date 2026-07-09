@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router";
-import { authLoader } from "./loaders/auth";
+import { userGuardLoader } from "./loaders/auth";
 
 export const router = createBrowserRouter([
   {
@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/create",
-    loader: authLoader,
+    loader: userGuardLoader,
     lazy: async () => {
       const { default: CreateBlog } = await import("./pages/CreateBlog");
       return { Component: CreateBlog };

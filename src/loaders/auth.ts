@@ -10,3 +10,13 @@ export const authLoader = () => {
 
   return {};
 };
+
+export const userGuardLoader = () => {
+  const { user } = useAuth.getState();
+
+  if (user?.role !== "USER") {
+    return redirect("/login");
+  }
+
+  return {};
+};
