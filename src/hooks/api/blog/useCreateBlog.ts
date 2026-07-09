@@ -1,4 +1,4 @@
-import { axiosInstance2 } from "@/lib/axios";
+import { axiosInstance } from "@/lib/axios";
 import type { CreateBlogSchema } from "@/schemas/blog/createBlog";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -17,7 +17,7 @@ function useCreateBlog() {
       formData.append("category", payload.category);
       formData.append("content", payload.content);
 
-      await axiosInstance2.post("/blogs", formData);
+      await axiosInstance.post("/blogs", formData);
     },
     onSuccess: () => {
       toast.success("Create blog success!");

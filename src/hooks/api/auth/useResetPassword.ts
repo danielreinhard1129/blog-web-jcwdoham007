@@ -1,4 +1,4 @@
-import { axiosInstance2 } from "@/lib/axios";
+import { axiosInstance } from "@/lib/axios";
 import type { ResetPasswordSchema } from "@/schemas/auth/reset-password";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -14,7 +14,7 @@ function useResetPassword() {
 
   return useMutation({
     mutationFn: async (payload: ResetPasswordPayload) => {
-      await axiosInstance2.post(
+      await axiosInstance.post(
         "/auth/reset-password",
         { password: payload.password },
         { headers: { Authorization: `Bearer ${payload.token}` } },

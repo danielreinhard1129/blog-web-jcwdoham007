@@ -1,4 +1,4 @@
-import { axiosInstance2 } from "@/lib/axios";
+import { axiosInstance } from "@/lib/axios";
 import type { RegisterSchema } from "@/schemas/auth/register";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -10,7 +10,7 @@ function useRegister() {
 
   return useMutation({
     mutationFn: async (payload: RegisterSchema) => {
-      await axiosInstance2.post("/auth/register", {
+      await axiosInstance.post("/auth/register", {
         name: payload.name,
         email: payload.email,
         password: payload.password,

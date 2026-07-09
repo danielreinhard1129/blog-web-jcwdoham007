@@ -1,4 +1,4 @@
-import { axiosInstance2 } from "@/lib/axios";
+import { axiosInstance } from "@/lib/axios";
 import type { ForgotPasswordSchema } from "@/schemas/auth/forgot-password";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 function useForgotPassword() {
   return useMutation({
     mutationFn: async (payload: ForgotPasswordSchema) => {
-      await axiosInstance2.post("/auth/forgot-password", {
+      await axiosInstance.post("/auth/forgot-password", {
         email: payload.email,
       });
     },
