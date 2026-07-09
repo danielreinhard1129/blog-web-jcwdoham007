@@ -1,4 +1,4 @@
-import { axiosInstance2 } from "@/lib/axios";
+import { axiosInstance } from "@/lib/axios";
 import { useAuth } from "@/stores/useAuth";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -25,7 +25,7 @@ function useLogin() {
 
   return useMutation({
     mutationFn: async (payload: LoginPayload) => {
-      const response = await axiosInstance2.post<LoginResponse>("/auth/login", {
+      const response = await axiosInstance.post<LoginResponse>("/auth/login", {
         email: payload.email,
         password: payload.password,
       });
