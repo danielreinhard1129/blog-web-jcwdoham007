@@ -1,13 +1,8 @@
-import { axiosInstance, axiosInstance2 } from "@/lib/axios";
+import { axiosInstance2 } from "@/lib/axios";
 import type { CreateBlogSchema } from "@/schemas/blog/createBlog";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
-
-interface ResponseFileService {
-  filePath: string;
-  fileURL: string;
-}
 
 function useCreateBlog() {
   const navigate = useNavigate();
@@ -15,27 +10,22 @@ function useCreateBlog() {
   return useMutation({
     mutationFn: async (payload: CreateBlogSchema) => {
       const formData = new FormData();
-      formData.append("file", payload.thumbnail);
-      const folderName = "images";
-      const fileName = Date.now() + Math.floor(Math.random() * 1000);
-      const response = await axiosInstance.post<ResponseFileService>(
-        `/files/${folderName}/${fileName}`,
-        formData,
-      );
 
-      await axiosInstance2.post("/blogs", {
-        title: payload.title,
-        description: payload.description,
-        category: payload.category,
-        content: payload.content,
-        thumbnail: response.data.fileURL,
-      });
+      formData.append("thumbnail", payload.thumbnail);
+      formData.append("title", payload.title);
+      formData.append("description", payload.description);
+      formData.append("category", payload.category);
+      formData.append("content", payload.content);
+
+      await axiosInstance2.post("/blogs", formData);
     },
     onSuccess: () => {
       toast.success("Create blog success!");
       navigate("/");
     },
-    onError: () => {
+    onError: (error) => {
+      console.log(error);
+
       toast.error("Create blog failed!");
     },
   });
