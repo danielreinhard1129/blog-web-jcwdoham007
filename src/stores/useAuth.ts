@@ -1,3 +1,4 @@
+import { axiosInstance } from "@/lib/axios";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -7,7 +8,6 @@ interface UserAuth {
   email: string;
   profilePic: string | null;
   role: string;
-  accessToken: string;
 }
 
 type Store = {
@@ -21,7 +21,10 @@ export const useAuth = create<Store>()(
     (set) => ({
       user: null,
       login: (user) => set({ user: user }),
-      logout: () => set({ user: null }),
+      logout: async () => {
+        await axiosInstance.post("/auth/logout");
+        set({ user: null });
+      },
     }),
     { name: "auth" },
   ),
