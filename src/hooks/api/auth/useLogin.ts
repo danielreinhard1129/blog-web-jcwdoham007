@@ -16,7 +16,6 @@ interface LoginResponse {
   email: string;
   profilePic: string;
   role: string;
-  accessToken: string;
 }
 
 function useLogin() {
@@ -40,7 +39,6 @@ function useLogin() {
         email: response.email,
         profilePic: response.profilePic,
         role: response.role,
-        accessToken: response.accessToken,
       });
 
       navigate("/");
